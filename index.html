@@ -69,7 +69,7 @@
       cameraSensor.width = cameraView.videoWidth;
       cameraSensor.height = cameraView.videoHeight;
       ctx = cameraSensor.getContext("2d")
-      ctx.drawImage(cameraView, 0, 0);
+      ctx.drawImage(cameraView,100, 100);
       cameraOutput.src = cameraSensor.toDataURL("image/webp");
       cameraOutput.classList.add("taken");
       if (ctx.width > 0) {
