@@ -28,50 +28,55 @@
 
 <body>
   <main id="camera">
-      <!-- Camera sensor -->
-      <canvas id="camera--sensor"></canvas>
-      <!-- Camera view -->
-      <video id="camera--view" autoplay playsinline></video>
-      <!-- Camera output -->
-      <img src="//:0" alt="" id="camera--output">
-      <!-- Camera trigger -->
-      <button id="camera--trigger">Take a picture</button>
+    <!-- Camera sensor -->
+    <canvas id="camera--sensor"></canvas>
+    <!-- Camera view -->
+    <video id="camera--view" autoplay playsinline></video>
+    <!-- Camera output -->
+    <img src="//:0" alt="" id="camera--output">
+    <!-- Camera trigger -->
+    <button id="camera--trigger">Take a picture</button>
   </main>
 
   <script>
     var b = Buttons
     // Set constraints for the video stream
-  var constraints = { video: { facingMode: "environment" }, audio: false };
-  // Define constants
-  const cameraView = document.querySelector("#camera--view"),
+    var constraints = {
+      video: {
+        facingMode: "environment"
+      },
+      audio: false
+    };
+    // Define constants
+    const cameraView = document.querySelector("#camera--view"),
       cameraOutput = document.querySelector("#camera--output"),
       cameraSensor = document.querySelector("#camera--sensor"),
       cameraTrigger = document.querySelector("#camera--trigger")
-  // Access the device camera and stream to cameraView
-  function cameraStart() {
+    // Access the device camera and stream to cameraView
+    function cameraStart() {
       navigator.mediaDevices
-          .getUserMedia(constraints)
-          .then(function(stream) {
+        .getUserMedia(constraints)
+        .then(function(stream) {
           track = stream.getTracks()[0];
           cameraView.srcObject = stream;
-      })
-      .catch(function(error) {
+        })
+        .catch(function(error) {
           console.error("Oops. Something is broken.", error);
-      });
-  }
-  // Take a picture when cameraTrigger is tapped
-  cameraTrigger.onclick = function() {
+        });
+    }
+    // Take a picture when cameraTrigger is tapped
+    cameraTrigger.onclick = function() {
       cameraSensor.width = cameraView.videoWidth;
       cameraSensor.height = cameraView.videoHeight;
-      cameraSensor.getContext("2d").drawImage(cameraView, 0, 0);
+      ctx = cameraSensor.getContext("2d")
+      ctx.drawImage(cameraView, 0, 0);
       cameraOutput.src = cameraSensor.toDataURL("image/webp");
       cameraOutput.classList.add("taken");
+      if (ctx.width > 0) {
+        var imageData = ctx.getImageData(0, 0, cameraSensor.width, cameraSensor.height);
+        var dataArr = imageData.data;
 
-      var imageData = cameraSensor.getImageData(imageX, imageY, image.width, image.height);
-      var dataArr = imageData.data;
-
-      for(var i = 0; i < dataArr.length; i += 4)
-      {
+        for (var i = 0; i < dataArr.length; i += 4) {
           var r = dataArr[i]; // Red color lies between 0 and 255
           var g = dataArr[i + 1]; // Green color lies between 0 and 255
           var b = dataArr[i + 2]; // Blue color lies between 0 and 255
@@ -84,20 +89,15 @@
           dataArr[i] = invertedRed;
           dataArr[i + 1] = invertedGreen;
           dataArr[i + 2] = invertedBlue;
+        }
 
-          
+        cameraSensor.putImageData(imageData, 0, 0);
+        alert("added negative")
       }
 
-      cameraSensor.putImageData(imageData, imageX, imageY);
-alert("added negative")
-
-
-  };
-  // Start the video stream when the window loads
-  window.addEventListener("load", cameraStart, false);
-
-
-
+    };
+    // Start the video stream when the window loads
+    window.addEventListener("load", cameraStart, false);
   </script>
 </body>
 
